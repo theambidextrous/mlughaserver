@@ -336,30 +336,57 @@ class SubscriptionController extends Controller
     }
     public function renew_done()
     {
-        $data = Subscription::where('account_no', Auth::user()->email)
-            ->orderBy('id', 'desc')
-            ->first();
-        if(is_null($data))
+        try
         {
+            $data = Subscription::where('account_no', Auth::user()->email)
+                ->orderBy('id', 'desc')
+                ->first();
+            if(is_null($data))
+            {
+                return response([
+                    'status' => 201,
+                    'message' => 'Payment not found',
+                    'done' => null,
+                ], 403);
+            }
+            if( $data->is_paid )
+            {
+                return response([
+                    'status' => 200,
+                    'message' => 'Payment not found',
+                    'done' => 1,
+                ], 200);
+            }
             return response([
                 'status' => 201,
-                'message' => 'Payment not found',
+                'message' => 'Payment not completed yet',
                 'done' => null,
             ], 403);
-        }
-        if( $data->is_paid )
-        {
+        } catch (\Illuminate\Database\QueryException $e) {
             return response([
-                'status' => 200,
-                'message' => 'Payment not found',
-                'done' => 1,
-            ], 200);
+                'status' => 201,
+                'message' => "Server error. Invalid data",
+                'errors' => $e->getMessage(),
+            ], 403);
+        } catch (PDOException $e) {
+            return response([
+                'status' => 201,
+                'message' => "Db error. Invalid data",
+                'errors' => $e->getMessage(),
+            ], 403);
+        } catch (Exception $e) {
+            return response([
+                'status' => 201,
+                'message' => $e->getMessage(),
+                'errors' => [],
+            ], 403);
+        } catch ( \Throwable $e) {
+            return response([
+                'status' => 201,
+                'message' => $e->getMessage(),
+                'errors' => [],
+            ], 403);
         }
-        return response([
-            'status' => 201,
-            'message' => 'Payment not completed yet',
-            'done' => null,
-        ], 403);
     }
     public function renew_acc(Request $req)
     {
