@@ -351,9 +351,21 @@ class SubscriptionController extends Controller
             }
             if( $data->is_paid )
             {
+                $accessToken = Auth::user()->createToken('authToken')->accessToken;
+                $user = Auth::user();
+                $account_no = Auth::user()->email;
+                $user['token'] = $accessToken;
+                $meta = Account::where('account_no', $account_no)->first();
+                $user['account_no'] = $account_no;
+                $user['account_name'] = $meta->account_name;
+                $user['app'] = $meta->app;
+                $user['is_active'] = $meta->is_active;
+                $user['info'] = $this->findChildAccountInfo($user['account_no']);
+                $user['app_label'] = $this->find_app_meta($user['app'], 'name');
                 return response([
                     'status' => 200,
                     'message' => 'Payment not found',
+                    'data' => $user,
                     'done' => 1,
                 ], 200);
             }
