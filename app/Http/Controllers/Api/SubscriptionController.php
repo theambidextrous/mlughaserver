@@ -359,7 +359,7 @@ class SubscriptionController extends Controller
                 $user['account_no'] = $account_no;
                 $user['account_name'] = $meta->account_name;
                 $user['app'] = $meta->app;
-                $user['is_active'] = $meta->is_active;
+                $user['is_active'] = 1;
                 $user['info'] = $this->findChildAccountInfo($user['account_no']);
                 $user['app_label'] = $this->find_app_meta($user['app'], 'name');
                 return response([
