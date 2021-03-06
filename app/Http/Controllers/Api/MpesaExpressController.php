@@ -50,6 +50,10 @@ class MpesaExpressController extends Controller
         // print_r(curl_getinfo($curl));
         // print_r('respo::: ' . $curl_response);
         // return $curl_response;
+        if(!is_object(json_decode($curl_response)))
+        {
+            throw new \Exception($curl_response);
+        }
         return json_decode($curl_response)->access_token;
 	}
 	function TriggerStkPush(){
