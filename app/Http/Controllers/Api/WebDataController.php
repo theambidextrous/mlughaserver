@@ -28,6 +28,7 @@ use App\Models\Mathmaasaicontent;
 
 use App\Models\Languagevideo;
 use App\Models\Mathvideo;
+use App\Models\Environmentvideo;
 
 /** mail */
 use Illuminate\Support\Facades\Mail;
@@ -503,7 +504,61 @@ class WebDataController extends Controller
                 'message' => $e->getMessage(),
                 'errors' => [],
             ], 403);
-        } 
+        }
+    }
+
+    public function env_videos(Request $req)
+    {
+        try {
+            $validator = Validator::make($req->all(), ['app' => 'required|string']);
+            if( $validator->fails() ){
+                return response([
+                    'status' => 201,
+                    'message' => 'Error: No app specified',
+                    'errors' => [],
+                ], 403);
+            }
+            $input = $req->all();
+            $locale = $this->extract_locale($input['app']);
+            $data = Environmentvideo::select('video')
+                ->where('locale', $locale)
+                ->first();
+            $video = [ 'abc' => null, 'abcd' => null ];
+            if( !is_null( $data ) )
+            {
+                $video = [
+                    'abc' => route('stream', ['file' => $data->video]),
+                ];
+            }
+            if( $this->is_paid_active() == 0 )
+            {
+                $video = [];
+            }
+            return response([
+                'status' => 200,
+                'message' => null,
+                'data' => $video,
+                'active' => $this->is_paid_active(),
+            ], 200);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response([
+                'status' => 201,
+                'message' => "Server error. Invalid data",
+                'errors' => $e->getMessage(),
+            ], 403);
+        } catch (PDOException $e) {
+            return response([
+                'status' => 201,
+                'message' => "Db error. Invalid data",
+                'errors' => $e->getMessage(),
+            ], 403);
+        } catch (Exception $e) {
+            return response([
+                'status' => 201,
+                'message' => $e->getMessage(),
+                'errors' => [],
+            ], 403);
+        }
     }
     protected function formatLangVideos($data)
     {

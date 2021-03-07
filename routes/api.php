@@ -92,6 +92,7 @@ Route::middleware(['auth:api'])->group( function(){
         Route::post('/lang/videos', [WebDataController::class, 'lang_videos']);
         Route::post('/lang/data', [WebDataController::class, 'lang_data']);
         Route::post('/math/videos', [WebDataController::class, 'math_videos']);
+        Route::post('/env/videos', [WebDataController::class, 'env_videos']);
         Route::post('/math/data', [WebDataController::class, 'math_data']);
     });
 });
