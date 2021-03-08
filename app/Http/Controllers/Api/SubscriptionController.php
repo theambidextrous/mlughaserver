@@ -28,6 +28,7 @@ class SubscriptionController extends Controller
 {
     public function register(Request $req)
     {
+        $clean_up_acc = null;
         try {
             $validator = Validator::make($req->all(), [
                 'account_name' => 'required|string',
@@ -65,6 +66,7 @@ class SubscriptionController extends Controller
                 ], 403);
             }
             $created = Account::create($input);
+            $clean_up_acc = $input['account_no'];
             $user_input = [
                 'password' => Hash::make($input['account_no']),
                 'email' => $input['account_no'],
@@ -122,30 +124,41 @@ class SubscriptionController extends Controller
                 ],403);
             }
         } catch (\Illuminate\Database\QueryException $e) {
+            $this->clean_up_acc($clean_up_acc);
             return response([
                 'status' => 201,
                 'message' => "Server error. Invalid data",
                 'errors' => $e->getMessage(),
             ], 403);
         } catch (PDOException $e) {
+            $this->clean_up_acc($clean_up_acc);
             return response([
                 'status' => 201,
                 'message' => "Db error. Invalid data",
                 'errors' => $e->getMessage(),
             ], 403);
         } catch (Exception $e) {
+            $this->clean_up_acc($clean_up_acc);
             return response([
                 'status' => 201,
                 'message' => $e->getMessage(),
                 'errors' => [],
             ], 403);
         } catch ( \Throwable $e) {
+            $this->clean_up_acc($clean_up_acc);
             return response([
                 'status' => 201,
                 'message' => $e->getMessage(),
                 'errors' => [],
             ], 403);
         }
+    }
+    protected function clean_up_acc($account)
+    {
+        Account::where('account_no', $account)->delete();
+        User::where('email', $account)->delete();
+        Subscription::where('account_no', $account)->delete();
+        return;
     }
     protected function findChildAccountInfo($account)
     {
