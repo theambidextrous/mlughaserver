@@ -296,10 +296,10 @@ class SubscriptionController extends Controller
     {
         try {
             $user = Auth::user();
-            $accountInfo = $this->findChildAccountInfo($input['account_no']);
+            $user['account_no'] = Auth::user()->email;
+            $accountInfo = $this->findChildAccountInfo($user['account_no']);
             $access_token = $user->createToken('authToken')->accessToken;
             $user['token'] = $access_token;
-            $user['account_no'] = Auth::user()->email;
             $user['account_name'] = $accountInfo['account_name'];
             $user['info'] = $accountInfo;
             $user['app'] = $accountInfo['app'];
