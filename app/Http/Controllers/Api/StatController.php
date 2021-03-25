@@ -68,7 +68,7 @@ class StatController extends Controller
         }
         $first_contr_date = $first_contr_date->created_at;
         $months_count = $this->count_months($first_contr_date, $now);
-        $sum_loads = Subscription::where('id', '!=', 0)->sum('amount');
+        $sum_loads = Subscription::where('id', '!=', 0)->sum('cost');
         $avr = $sum_loads/$months_count;
         $avr = $this->format_ks($avr);
         return $avr;
