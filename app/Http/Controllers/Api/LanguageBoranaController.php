@@ -181,7 +181,6 @@ class LanguageBoranaController extends Controller
     }
     protected function previousUuid($id)
     {
-        return (string) Str::uuid();
         $d = Languageboranacontent::find($id);
         if(is_null($d))
         {
