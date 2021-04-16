@@ -179,9 +179,19 @@ class LanguageMaasaiController extends Controller
             'data' => $this->find_borana_lang_content(),
         ], 200);
     }
+    protected function previousUuid($id)
+    {
+        $d = Languagemaasaicontent::find($id);
+        if(is_null($d))
+        {
+            //return (string) Str::uuid();
+            throw new \Exception("data item's stored copy was not found");
+        }
+        return substr($d->image, 0, 36);
+    }
     public function content_edit(Request $req, $id)
     {
-        $file_uuid = (string) Str::uuid();
+        $file_uuid = $this->previousUuid($id);
         $validator = Validator::make($req->all(), [
             'section' => 'required|string|not_in:nn',
             'label' => 'required|string',
