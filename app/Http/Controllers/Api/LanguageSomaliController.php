@@ -181,7 +181,6 @@ class LanguageSomaliController extends Controller
     }
     protected function previousUuid($id)
     {
-        return (string) Str::uuid();
         $d = Languagesomalicontent::find($id);
         if(is_null($d))
         {
